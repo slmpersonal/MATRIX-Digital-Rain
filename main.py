@@ -47,7 +47,8 @@ chr_set_3 = [chr(int(97) + i) for i in range(26)]  # English lower chr_set
 katakana = chr_set_1 + chr_set_2 + chr_set_3
 font = pg.font.Font('font/ms mincho.ttf', FONT_SIZE)
 green_katakana = [font.render(char, True, (40, randrange(160, 256), 40)) for char in katakana]
-lightgreen_katakana = [font.render(char, True, pg.Color('lightgreen')) for char in katakana]
+greenlite_katakana = [font.render(char, True, pg.Color('lightgreen')) for char in katakana]
+lightgreen_katakana = [font.render(char, True, pg.Color('white')) for char in katakana]
 symbol_columns = [SymbolColumn(x, randrange(-HEIGHT, 0)) for x in range(0, WIDTH, FONT_SIZE)]
 
 while True:
@@ -64,4 +65,5 @@ while True:
     pg.display.flip()
     clock.tick(60)
 
-# %%
+
+#%%

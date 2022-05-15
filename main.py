@@ -41,9 +41,10 @@ clock = pg.time.Clock()
 
 # TODO Chr_set manager, Home Screen, Typing Game
 
-# katakana = [chr(int('0x30a0', 16) + i) for i in range(96)] # Original Matrix chr_set
-
-katakana = [chr(int(97) + i) for i in range(26)]  # English chr_set
+chr_set_1 = [chr(int('0x30a0', 16) + i) for i in range(96)] # Original Matrix chr_set
+chr_set_2 = [chr(int(65) + i) for i in range(26)]  # English Upper chr_set
+chr_set_3 = [chr(int(97) + i) for i in range(26)]  # English lower chr_set
+katakana = chr_set_1 + chr_set_2 + chr_set_3
 font = pg.font.Font('font/ms mincho.ttf', FONT_SIZE)
 green_katakana = [font.render(char, True, (40, randrange(160, 256), 40)) for char in katakana]
 lightgreen_katakana = [font.render(char, True, pg.Color('lightgreen')) for char in katakana]

@@ -19,7 +19,7 @@ settings = {  # Hardcoded default settings
     'color_black': (0, 0, 0),  # Blue
     'alpha_value': 0,
     'max_fps': 60,
-    'game_clock': 300,
+    'game_clock': 100,
     'matrix_multiplier': 1,
     'eng_u_multiplier': 1,
     'eng_l_multiplier': 1,
@@ -28,7 +28,7 @@ settings = {  # Hardcoded default settings
     'sym_top_multiplier': 1
 }
 
-try:  # load or create settings.json
+try:  # Load or create settings.json
     with open('settings.json', 'r') as text_file:
         print("settings.json found.")
         settings = json.load(text_file)
@@ -39,8 +39,9 @@ except FileNotFoundError:  # than write new setting.json with defaults
 with open("settings.json", "r") as text_file:
     print(f'settings loaded:{json.load(text_file)}')  # for debugging
 
-max_fps = settings['max_fps']
+run = True
 game_clock = settings['game_clock']
+timer_1 = str(game_clock)
 resolution = (settings['resolution.x']), (settings['resolution.y'])
 surface_x_offset = int(settings['resolution.x'] / 16)
 surface_y_offset = (int(settings['resolution.y'] / 10) * 2)
@@ -49,10 +50,8 @@ surface_res = (
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
-
 if settings['scale_font']:
     font = (surface_y_offset / 25)
-
 
 top_symbols = [96, 126, 33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 95, 43, 61, 45]
 middle_symbols = (91, 93, 92, 59, 39, 44, 46, 47, 123, 125, 124, 58, 34, 60, 62, 63)
@@ -82,7 +81,7 @@ class Symbol:
     def __init__(self, x, y, speed):
         self.x, self.y = x, y
         self.speed = speed
-        self.value = choice(green_katakana)
+        self.value = choice(green)
         self.interval = randrange(5, 30)
 
     def draw(self, color):
@@ -90,14 +89,14 @@ class Symbol:
             coin = randrange(0, 20)  # Increasing this range reduces red frequency
             if coin == 0:
                 color = 'red'
-            black_coin = randrange(0, 10)  # Increasing this range reduces black frequency
+            black_coin = randrange(0, 10)  # Increasing this range reduces black/flicker frequency
             if black_coin == 0:
                 color = 'black'
 
         frames = pygame.time.get_ticks()
         if not frames % self.interval:
-            self.value = choice(green_katakana if color == 'green' else black_katakana if color == 'black'
-            else red_katakana if color == 'red' else light_green_katakana)
+            self.value = choice(green if color == 'green' else black if color == 'black'
+            else red if color == 'red' else light_green)
         self.y = self.y + self.speed if self.y < settings['resolution.y'] else -settings['font_size']
         surface.blit(self.value, (self.x, self.y))
 
@@ -113,34 +112,47 @@ class SymbolColumn:
         [symbol.draw('green') if i else symbol.draw('light green') for i, symbol in enumerate(self.symbols)]
 
 
-pygame.init()  # init pygame
+pygame.init()  # Init pygame
 font = pygame.font.Font(settings['font'], settings['font_size'])  # Set font
 screen = pygame.display.set_mode(resolution)  # Display updater
+clock = pygame.time.Clock()  # Create clock
+
+#  Objects
 background = pygame.image.load("assets/background.png").convert()  # Define background variables
 background = pygame.transform.scale(background, resolution)  # Scale background image
 textbox1 = pygame.image.load("assets/textbox.png").convert()
-textbox1 = pygame.transform.scale(textbox1, (((settings['resolution.x']) - (surface_x_offset * 2)), int(surface_y_offset / 4)))
-cli_cursor = pygame.image.load("assets/cli_cursor.png").convert()
+textbox1 = pygame.transform.scale(textbox1,
+                                  (((settings['resolution.x']) - (surface_x_offset * 2)), int(surface_y_offset / 4)))
+cli_cursor = pygame.image.load("assets/cli_cursor.png").convert()  # NEEDs work on scaling
 cli_cursor = pygame.transform.scale(cli_cursor, (((settings['font_size']) / 2), int((settings['font_size']) / 10)))
 surface = pygame.Surface(surface_res)
 surface.set_alpha(settings['alpha_value'])
-clock = pygame.time.Clock()
 
-#  define choices
-black_katakana = [font.render(char, True, (settings['color_black'])) for char in chr_set]
-red_katakana = [font.render(char, True, (settings['color_red'])) for char in chr_set]
-green_katakana = [font.render(char, True, (settings['color_green'])) for char in chr_set]
-light_green_katakana = [font.render(char, True, (settings['color_light_green'])) for char in chr_set]
+#  Set in-game timer
+#  counter, text = 10, '10'.rjust(3)
+pygame.time.set_timer(pygame.USEREVENT, 1000)
 
+#  Define choices
+black = [font.render(char, True, (settings['color_black'])) for char in chr_set]
+red = [font.render(char, True, (settings['color_red'])) for char in chr_set]
+green = [font.render(char, True, (settings['color_green'])) for char in chr_set]
+light_green = [font.render(char, True, (settings['color_light_green'])) for char in chr_set]
+
+#  Draw columns
 symbol_columns = [SymbolColumn(x, randrange(-settings['resolution.y'], 0)) for x in range(0, settings['resolution.x'],
                                                                                           settings['font_size'])]
+#  In-Game messages
+message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
 
-while True:
+
+while run:
 
     screen.blit(background, (0, 0))
     screen.blit(textbox1, (surface_x_offset, ((settings['resolution.y']) - surface_y_offset)))
-    screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4), ((settings['resolution.y']) - surface_y_offset + int((settings['font_size']) * 0.5))))
+    screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4),
+                             ((settings['resolution.y']) - surface_y_offset + int((settings['font_size']) * 0.5))))
     screen.blit(surface, (surface_x_offset, surface_y_offset))
+
     surface.fill(pygame.Color('black'))
 
     [symbol_column.draw() for symbol_column in symbol_columns]
@@ -151,12 +163,17 @@ while True:
         pygame.display.update()
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.USEREVENT:
+            game_clock -= 1
+            timer_1 = str(game_clock).rjust(3) if game_clock > 0 else 'GAME OVER!'
+    if event.type == pygame.QUIT:
             with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
                 json.dump(settings, text_file)
+            run = False
             pygame.quit()
             sys.exit()
+    if game_clock == 0:  # NEED to add 'and' for win/lost messages
+        screen.blit(message_1, ((((settings['resolution.x']) / 2) - surface_y_offset), (((settings['resolution.y']) / 2) - surface_y_offset)))
+    screen.blit(font.render(str(timer_1), True, (0, 0, 140)), ((surface_x_offset, surface_y_offset)))
     pygame.display.flip()
-    game_clock -= 1
-
-    clock.tick(max_fps)
+    clock.tick(settings['max_fps'])

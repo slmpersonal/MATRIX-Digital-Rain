@@ -29,12 +29,16 @@ Features added:
 * Added numbers
 * Resolution scaling seems solid
 
-![matrix 5](screenshot/4.png "")
+![matrix 5](screenshot/4.png "Symbols and Numbers")
 
 * Add Capture Bar at bottom
 * Add CLI Cursor
 
-![matrix 6](screenshot/5.png)
+![matrix 6](screenshot/5.png "Cursor this bar")
+
+* Add Timer 
+
+![matrix 7](screenshot/6.png "Times up")
 
 Possible future features:
 * Randomize text size / alignment

@@ -10,16 +10,20 @@ settings = {  # Hardcoded default settings
     'resolution.y': 900,
     'font': 'font/ms mincho.ttf',
     'font_size': 40,
-    'color green': (40, 140, 40),  # Green
+    'color green': (20, 240, 20),  # Green
+    'color light green': (160, 240, 160),  # Green
     'color red': (140, 40, 40),  # Red
     'color blue': (40, 40, 140),  # Blue
     'alpha_value': 0
 }
 resolution = (settings['resolution.x']), (settings['resolution.y'])
 surface_x_offset = int(settings['resolution.x'] / 16)
-surface_y_offset = (int(settings['resolution.y'] / 14) * 2)
-surface_res = (((settings['resolution.x']) - (surface_x_offset * 2)), ((settings['resolution.y']) - (surface_y_offset * 2)))
+surface_y_offset = (int(settings['resolution.y'] / 10) * 2)
+surface_res = (
+    ((settings['resolution.x']) - (surface_x_offset * 2)), ((settings['resolution.y']) - (surface_y_offset * 2)))
+
 os.environ['SDL_VIDEO_CENTERED'] = '1'
+
 chr_set_pt_1 = [chr(int('0x30a0', 16) + i) for i in range(96)]  # Original Matrix chr_set
 chr_set_pt_2 = [chr(int(65) + i) for i in range(26)]  # English Upper chr_set
 chr_set_pt_3 = [chr(int(97) + i) for i in range(26)]  # English lower chr_set
@@ -45,43 +49,51 @@ class Symbol:
         self.interval = randrange(5, 30)
 
     def draw(self, color):
+        if color == 'green':
+            coin = randrange(0, 10)  # Increasing this range reduces red frequency
+            if coin == 0:
+                color = 'red'
+
         frames = pygame.time.get_ticks()
         if not frames % self.interval:
-            self.value = choice(green_katakana if color == 'green' else lightgreen_katakana)
-            #  use choice for Red corrupt symbols
+            self.value = choice(green_katakana if color == 'green'
+                                else red_katakana if color == 'red' else light_green_katakana)
         self.y = self.y + self.speed if self.y < settings['resolution.y'] else -settings['font_size']
         surface.blit(self.value, (self.x, self.y))
 
 
 class SymbolColumn:
     def __init__(self, x, y):
-        self.column_height = randrange(8, 24)
+        self.column_height = randrange(int((settings['resolution.y']) / 100), int((settings['resolution.x']) / 100))
         self.speed = randrange(3, 7)
-        self.symbols = [Symbol(x, i, self.speed) for i in range(y, y - (settings['font_size']) * self.column_height, -(settings['font_size']))]
+        self.symbols = [Symbol(x, i, self.speed) for i in range(y, y - (settings['font_size']) * self.column_height, -(
+            settings['font_size']))]
 
     def draw(self):
-        [symbol.draw('green') if i else symbol.draw('lightgreen') for i, symbol in enumerate(self.symbols)]
+        [symbol.draw('green') if i else symbol.draw('light green') for i, symbol in enumerate(self.symbols)]
 
 
 pygame.init()  # init pygame
 font = pygame.font.Font(settings['font'], settings['font_size'])  # Set font
-screen = pygame.display.set_mode((resolution))  # Display updater
+screen = pygame.display.set_mode(resolution)  # Display updater
 background = pygame.image.load("assets/background.png").convert()  # Define background variables
-background = pygame.transform.scale(background, (resolution))  # Scale background image
+background = pygame.transform.scale(background, resolution)  # Scale background image
 surface = pygame.Surface(surface_res)
 surface.set_alpha(settings['alpha_value'])
 clock = pygame.time.Clock()
 
 #  define choices
-green_katakana = [font.render(char, True, (00, 160, 00)) for char in chr_set]
-lightgreen_katakana = [font.render(char, True, pygame.Color('lightgreen')) for char in chr_set]
+red_katakana = [font.render(char, True, (settings['color red'])) for char in chr_set]
+green_katakana = [font.render(char, True, (settings['color green'])) for char in chr_set]
+light_green_katakana = [font.render(char, True, (settings['color light green'])) for char in chr_set]
 
-symbol_columns = [SymbolColumn(x, randrange(-settings['resolution.y'], 0)) for x in range(0, settings['resolution.x'], settings['font_size'])]
+symbol_columns = [SymbolColumn(x, randrange(-settings['resolution.y'], 0)) for x in range(0, settings['resolution.x'],
+                                                                                          settings['font_size'])]
 
 while True:
 
     screen.blit(background, (0, 0))
-    screen.blit(surface, (surface_x_offset, (surface_y_offset + (surface_y_offset / 3))))
+    screen.blit(surface, (surface_x_offset, surface_y_offset))
     surface.fill(pygame.Color('black'))
 
     [symbol_column.draw() for symbol_column in symbol_columns]

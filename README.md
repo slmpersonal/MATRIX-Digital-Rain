@@ -1,9 +1,9 @@
-# MATRIX-Digital-Rain
-Matrix digital rain in Python with Pygame
+#  MATRICKS
+̶MATRICKS in Python with Pygame
 
 ![matrix](screenshot/0.png "Matrix")
 
-This is a fork of the original. Plan to add more features.
+This is a fork of the original (MATRIX-Digital-Rain). Plan to add more features.
 Going to make text look more like movie.
 Using these videos for comparison
 Video 1 - https://www.youtube.com/watch?v=MvEXkd3O2ow
@@ -18,6 +18,12 @@ Features added:
 * Settings file
 
 ![matrix3](screenshot/2.png "Monitor")
+
+* Red Corruption added to symbols
+* Length of columns now scales with resolution (Solves collisions)
+* Space made at bottom of screen for capture bar
+
+![matrix4](screenshot/3.png "Corruption")
 
 Possible future features:
 * Add more Symbols

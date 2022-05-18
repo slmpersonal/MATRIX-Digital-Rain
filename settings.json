@@ -1,1 +1,1 @@
-{"debug_overlay": true, "resolution.x": 800, "resolution.y": 600, "font": "font/ms mincho.ttf", "font_size": 40, "color_green": [20, 240, 20], "color_light_green": [180, 250, 180], "color_red": [245, 20, 20], "color_blue": [40, 40, 140], "alpha_value": 0, "max_fps": 60, "game_clock": 300}
+{"debug_overlay": true, "resolution.x": 800, "resolution.y": 600, "font": "font/ms mincho.ttf", "font_size": 40, "color_green": [20, 240, 20], "color_light_green": [180, 250, 180], "color_red": [245, 20, 20], "color_blue": [40, 40, 140], "alpha_value": 114, "max_fps": 60, "game_clock": 300}

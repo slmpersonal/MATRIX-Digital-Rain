@@ -17,7 +17,13 @@ settings = {  # Hardcoded default settings
     'color_blue': (40, 40, 140),  # Blue
     'alpha_value': 0,
     'max_fps': 60,
-    'game_clock': 300
+    'game_clock': 300,
+    'matrix_multiplier': 1,
+    'eng_u_multiplier': 1,
+    'eng_l_multiplier': 1,
+    'num_multiplier': 1,
+    'sym_mid_multiplier': 1,
+    'sym_top_multiplier': 1
 }
 
 try:  # load or create settings.json
@@ -41,16 +47,28 @@ surface_res = (
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
-top_symbols = [96, 126, 33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 95, 43, 61, 45]
-middle_symbols = (91, 93, 92, 59, 39, 44, 46, 47, 123, 125, 124, 58, 34, 60, 62, 63)
+top_symbols = [96, 126, 33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 95, 43, 61, 45, 32, 32, 32, 32]  # 4 SPACEBAR added
+middle_symbols = (91, 93, 92, 59, 39, 44, 46, 47, 123, 125, 124, 58, 34, 60, 62, 63, 32, 32, 32, 32)  # 4 SPACEBAR added
 chr_set_pt_1 = [chr(int('0x30a0', 16) + i) for i in range(96)]  # Original Matrix chr_set
 chr_set_pt_2 = [chr(int(65) + i) for i in range(26)]  # English Upper chr_set
 chr_set_pt_3 = [chr(int(97) + i) for i in range(26)]  # English lower chr_set
 chr_set_pt_4 = [chr(int(48) + i) for i in range(57)]  # Numbers
 chr_set_pt_5 = [chr(middle_symbols[i]) for i in range(0, len(middle_symbols) - 1)]  # Middle keyboard symbols
 chr_set_pt_6 = [chr(top_symbols[i]) for i in range(0, len(top_symbols) - 1)]  # Top keyboard symbols
-chr_set = chr_set_pt_1 + chr_set_pt_2 + chr_set_pt_3 + chr_set_pt_4 + chr_set_pt_5 + chr_set_pt_6  # Character set(s)
-# Need function/nav keycodes
+chr_set = [chr(int(32))]  # Need function/nav keycodes
+
+for i in range(0, (settings['matrix_multiplier'])):
+    chr_set += chr_set_pt_1
+for i in range(0, (settings['eng_u_multiplier'])):
+    chr_set += chr_set_pt_2
+for i in range(0, (settings['eng_l_multiplier'])):
+    chr_set += chr_set_pt_3
+for i in range(0, (settings['num_multiplier'])):
+    chr_set += chr_set_pt_4
+for i in range(0, (settings['sym_mid_multiplier'])):
+    chr_set += chr_set_pt_5
+for i in range(0, (settings['sym_top_multiplier'])):
+    chr_set += chr_set_pt_6
 
 
 class Symbol:
@@ -62,7 +80,7 @@ class Symbol:
 
     def draw(self, color):
         if color == 'green':
-            coin = randrange(0, 10)  # Increasing this range reduces red frequency
+            coin = randrange(0, 20)  # Increasing this range reduces red frequency
             if coin == 0:
                 color = 'red'
 

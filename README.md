@@ -25,11 +25,16 @@ Features added:
 
 ![matrix4](screenshot/3.png "Corruption")
 
-Added more symbols
-Added numbers
-Resolution scaling seems solid
+* Added more symbols
+* Added numbers
+* Resolution scaling seems solid
 
 ![matrix 5](screenshot/4.png "")
+
+* Add Capture Bar at bottom
+* Add CLI Cursor
+
+![matrix 6](screenshot/5.png)
 
 Possible future features:
 * Randomize text size / alignment
@@ -40,7 +45,6 @@ Possible future features:
 * Add Mini Games
 * Add Point System
 * Accept Typing input
-* Add Capture Bar at bottom
 * Use Capture Bar for Typing Game
 * Add Coding (Information gathering)
 

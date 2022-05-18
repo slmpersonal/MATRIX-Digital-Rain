@@ -25,8 +25,13 @@ Features added:
 
 ![matrix4](screenshot/3.png "Corruption")
 
+Added more symbols
+Added numbers
+Resolution scaling seems solid
+
+![matrix 5](screenshot/4.png "")
+
 Possible future features:
-* Add more Symbols
 * Randomize text size / alignment
 * Speed up text drop, add random stop at bottom
 * Add GUI (QT Designer)

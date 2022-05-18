@@ -6,28 +6,19 @@ from random import randrange, choice
 import numpy
 
 settings = {  # Hardcoded default settings
-    'resolution.x': 1600,
-    'resolution.y': 900,
+    'debug_overlay': True,  # add debug overlay fps/cpu/log
+    'resolution.x': 800,
+    'resolution.y': 600,
     'font': 'font/ms mincho.ttf',
     'font_size': 40,
-    'color green': (20, 240, 20),  # Green
-    'color light green': (160, 240, 160),  # Green
-    'color red': (140, 40, 40),  # Red
-    'color blue': (40, 40, 140),  # Blue
-    'alpha_value': 0
+    'color_green': (20, 240, 20),  # Green
+    'color_light_green': (180, 250, 180),  # Light green
+    'color_red': (245, 20, 20),  # Red
+    'color_blue': (40, 40, 140),  # Blue
+    'alpha_value': 0,
+    'max_fps': 60,
+    'game_clock': 300
 }
-resolution = (settings['resolution.x']), (settings['resolution.y'])
-surface_x_offset = int(settings['resolution.x'] / 16)
-surface_y_offset = (int(settings['resolution.y'] / 10) * 2)
-surface_res = (
-    ((settings['resolution.x']) - (surface_x_offset * 2)), ((settings['resolution.y']) - (surface_y_offset * 2)))
-
-os.environ['SDL_VIDEO_CENTERED'] = '1'
-
-chr_set_pt_1 = [chr(int('0x30a0', 16) + i) for i in range(96)]  # Original Matrix chr_set
-chr_set_pt_2 = [chr(int(65) + i) for i in range(26)]  # English Upper chr_set
-chr_set_pt_3 = [chr(int(97) + i) for i in range(26)]  # English lower chr_set
-chr_set = chr_set_pt_1 + chr_set_pt_2 + chr_set_pt_3  # Character set(s)
 
 try:  # load or create settings.json
     with open('settings.json', 'r') as text_file:
@@ -39,6 +30,27 @@ except FileNotFoundError:  # than write new setting.json with defaults
         json.dump(settings, text_file)
 with open("settings.json", "r") as text_file:
     print(f'settings loaded:{json.load(text_file)}')  # for debugging
+
+max_fps = settings['max_fps']
+game_clock = settings['game_clock']
+resolution = (settings['resolution.x']), (settings['resolution.y'])
+surface_x_offset = int(settings['resolution.x'] / 16)
+surface_y_offset = (int(settings['resolution.y'] / 10) * 2)
+surface_res = (
+    ((settings['resolution.x']) - (surface_x_offset * 2)), ((settings['resolution.y']) - (surface_y_offset * 2)))
+
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+
+top_symbols = [96, 126, 33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 95, 43, 61, 45]
+middle_symbols = (91, 93, 92, 59, 39, 44, 46, 47, 123, 125, 124, 58, 34, 60, 62, 63)
+chr_set_pt_1 = [chr(int('0x30a0', 16) + i) for i in range(96)]  # Original Matrix chr_set
+chr_set_pt_2 = [chr(int(65) + i) for i in range(26)]  # English Upper chr_set
+chr_set_pt_3 = [chr(int(97) + i) for i in range(26)]  # English lower chr_set
+chr_set_pt_4 = [chr(int(48) + i) for i in range(57)]  # Numbers
+chr_set_pt_5 = [chr(middle_symbols[i]) for i in range(0, len(middle_symbols) - 1)]  # Middle keyboard symbols
+chr_set_pt_6 = [chr(top_symbols[i]) for i in range(0, len(top_symbols) - 1)]  # Top keyboard symbols
+chr_set = chr_set_pt_1 + chr_set_pt_2 + chr_set_pt_3 + chr_set_pt_4 + chr_set_pt_5 + chr_set_pt_6  # Character set(s)
+# Need function/nav keycodes
 
 
 class Symbol:
@@ -83,9 +95,9 @@ surface.set_alpha(settings['alpha_value'])
 clock = pygame.time.Clock()
 
 #  define choices
-red_katakana = [font.render(char, True, (settings['color red'])) for char in chr_set]
-green_katakana = [font.render(char, True, (settings['color green'])) for char in chr_set]
-light_green_katakana = [font.render(char, True, (settings['color light green'])) for char in chr_set]
+red_katakana = [font.render(char, True, (settings['color_red'])) for char in chr_set]
+green_katakana = [font.render(char, True, (settings['color_green'])) for char in chr_set]
+light_green_katakana = [font.render(char, True, (settings['color_light_green'])) for char in chr_set]
 
 symbol_columns = [SymbolColumn(x, randrange(-settings['resolution.y'], 0)) for x in range(0, settings['resolution.x'],
                                                                                           settings['font_size'])]
@@ -110,4 +122,6 @@ while True:
             pygame.quit()
             sys.exit()
     pygame.display.flip()
-    clock.tick(60)
+    game_clock -= 1
+
+    clock.tick(max_fps)

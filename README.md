@@ -1,7 +1,7 @@
 # MATRIX-Digital-Rain
 Matrix digital rain in Python with Pygame
 
-![matrix](screenshot/0.png "matrix")
+![matrix](screenshot/0.png "Matrix")
 
 This is a fork of the original. Plan to add more features.
 Going to make text look more like movie.
@@ -13,6 +13,11 @@ Features added:
 * English Symbols
 
 ![matrix2](screenshot/1.png "English Symbols")
+
+* Monitor Boarder
+* Settings file
+
+![matrix3](screenshot/2.png "Monitor")
 
 Possible future features:
 * Add more Symbols

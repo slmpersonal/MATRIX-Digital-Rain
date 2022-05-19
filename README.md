@@ -54,7 +54,7 @@ Possible future features:
 
 Known Issues:
 * Lines shouldn't scroll, digits should be added (See Video 2)
-
+* Hardcoded settings cause outdated settings.json. Delete file for defaults to reload is temp fix, until settings menu. 
 
 Gather information by correctly typing falling keys.
 Information unlocks passcodes used to dial-in.

@@ -3,7 +3,6 @@ import sys
 import os
 import json
 from random import randrange, choice
-import numpy
 
 settings = {  # Hardcoded default settings
     'debug_overlay': True,  # add debug overlay fps/cpu/log
@@ -19,7 +18,7 @@ settings = {  # Hardcoded default settings
     'color_black': (0, 0, 0),  # Blue
     'alpha_value': 0,
     'max_fps': 60,
-    'game_clock': 100,
+    'game_clock': 15,
     'matrix_multiplier': 1,
     'eng_u_multiplier': 1,
     'eng_l_multiplier': 1,
@@ -32,21 +31,20 @@ try:  # Load or create settings.json
     with open('settings.json', 'r') as text_file:
         print("settings.json found.")
         settings = json.load(text_file)
-except FileNotFoundError:  # than write new setting.json with defaults
+except FileNotFoundError:  # than write new settings.json with defaults
     print("settings.json not found. Creating default file")
-    with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
+    with open('settings.json', 'w') as text_file:
         json.dump(settings, text_file)
 with open("settings.json", "r") as text_file:
     print(f'settings loaded:{json.load(text_file)}')  # for debugging
 
 run = True
 game_clock = settings['game_clock']
-timer_1 = str(game_clock)
-resolution = (settings['resolution.x']), (settings['resolution.y'])
-surface_x_offset = int(settings['resolution.x'] / 16)
-surface_y_offset = (int(settings['resolution.y'] / 10) * 2)
-surface_res = (
-    ((settings['resolution.x']) - (surface_x_offset * 2)), ((settings['resolution.y']) - (surface_y_offset * 2)))
+timer_1 = str(game_clock).rjust(3)
+resolution = res_width, res_height = (settings['resolution.x']), (settings['resolution.y'])
+surface_x_offset = int(res_width / 16)
+surface_y_offset = int(res_height / 10) * 2
+surface_res = (res_width - (surface_x_offset * 2)), (res_height - (surface_y_offset * 2))
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -63,18 +61,18 @@ chr_set_pt_5 = [chr(middle_symbols[i]) for i in range(0, len(middle_symbols) - 1
 chr_set_pt_6 = [chr(top_symbols[i]) for i in range(0, len(top_symbols) - 1)]  # Top keyboard symbols
 chr_set = [chr(int(32))]  # NEED function/nav keycodes
 
-for i in range(0, (settings['matrix_multiplier'])):
-    chr_set += chr_set_pt_1
-for i in range(0, (settings['eng_u_multiplier'])):
-    chr_set += chr_set_pt_2
-for i in range(0, (settings['eng_l_multiplier'])):
-    chr_set += chr_set_pt_3
-for i in range(0, (settings['num_multiplier'])):
-    chr_set += chr_set_pt_4
-for i in range(0, (settings['sym_mid_multiplier'])):
-    chr_set += chr_set_pt_5
-for i in range(0, (settings['sym_top_multiplier'])):
-    chr_set += chr_set_pt_6
+
+def add2sets(set_1, set_2, set_multi):  # Function to combined chr_set(s) list
+    for i in range(0, set_multi):
+        set_1 += set_2
+
+
+add2sets(chr_set, chr_set_pt_1, (settings['matrix_multiplier']))
+add2sets(chr_set, chr_set_pt_2, (settings['eng_u_multiplier']))
+add2sets(chr_set, chr_set_pt_3, (settings['eng_l_multiplier']))
+add2sets(chr_set, chr_set_pt_4, (settings['num_multiplier']))
+add2sets(chr_set, chr_set_pt_5, (settings['sym_mid_multiplier']))
+add2sets(chr_set, chr_set_pt_6, (settings['sym_top_multiplier']))
 
 
 class Symbol:
@@ -97,13 +95,13 @@ class Symbol:
         if not frames % self.interval:
             self.value = choice(green if color == 'green' else black if color == 'black'
             else red if color == 'red' else light_green)
-        self.y = self.y + self.speed if self.y < settings['resolution.y'] else -settings['font_size']
+        self.y = self.y + self.speed if self.y < res_height else -settings['font_size']
         surface.blit(self.value, (self.x, self.y))
 
 
 class SymbolColumn:
     def __init__(self, x, y):
-        self.column_height = randrange(int((settings['resolution.y']) / 100), int((settings['resolution.x']) / 100))
+        self.column_height = randrange(int(res_height / 100), int(res_width / 100))
         self.speed = randrange(3, 7)
         self.symbols = [Symbol(x, i, self.speed) for i in range(y, y - (settings['font_size']) * self.column_height, -(
             settings['font_size']))]
@@ -122,14 +120,13 @@ background = pygame.image.load("assets/background.png").convert()  # Define back
 background = pygame.transform.scale(background, resolution)  # Scale background image
 textbox1 = pygame.image.load("assets/textbox.png").convert()
 textbox1 = pygame.transform.scale(textbox1,
-                                  (((settings['resolution.x']) - (surface_x_offset * 2)), int(surface_y_offset / 4)))
+                                  ((res_width - (surface_x_offset * 2)), int(surface_y_offset / 4)))
 cli_cursor = pygame.image.load("assets/cli_cursor.png").convert()  # NEEDs work on scaling
 cli_cursor = pygame.transform.scale(cli_cursor, (((settings['font_size']) / 2), int((settings['font_size']) / 10)))
 surface = pygame.Surface(surface_res)
 surface.set_alpha(settings['alpha_value'])
 
 #  Set in-game timer
-#  counter, text = 10, '10'.rjust(3)
 pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 #  Define choices
@@ -139,18 +136,17 @@ green = [font.render(char, True, (settings['color_green'])) for char in chr_set]
 light_green = [font.render(char, True, (settings['color_light_green'])) for char in chr_set]
 
 #  Draw columns
-symbol_columns = [SymbolColumn(x, randrange(-settings['resolution.y'], 0)) for x in range(0, settings['resolution.x'],
+symbol_columns = [SymbolColumn(x, randrange(-res_height, 0)) for x in range(0, res_width,
                                                                                           settings['font_size'])]
 #  In-Game messages
 message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
 
-
 while run:
 
     screen.blit(background, (0, 0))
-    screen.blit(textbox1, (surface_x_offset, ((settings['resolution.y']) - surface_y_offset)))
+    screen.blit(textbox1, (surface_x_offset, (res_height - surface_y_offset)))
     screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4),
-                             ((settings['resolution.y']) - surface_y_offset + int((settings['font_size']) * 0.5))))
+                             (res_height - surface_y_offset + int((settings['font_size']) * 0.5))))
     screen.blit(surface, (surface_x_offset, surface_y_offset))
 
     surface.fill(pygame.Color('black'))
@@ -167,13 +163,17 @@ while run:
             game_clock -= 1
             timer_1 = str(game_clock).rjust(3) if game_clock > 0 else 'GAME OVER!'
     if event.type == pygame.QUIT:
-            with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
-                json.dump(settings, text_file)
-            run = False
-            pygame.quit()
-            sys.exit()
+        with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
+            json.dump(settings, text_file)
+        run = False
     if game_clock == 0:  # NEED to add 'and' for win/lost messages
-        screen.blit(message_1, ((((settings['resolution.x']) / 2) - surface_y_offset), (((settings['resolution.y']) / 2) - surface_y_offset)))
+        screen.blit(message_1, (((res_width / 2) - surface_y_offset), ((res_height / 2) - surface_y_offset)))
     screen.blit(font.render(str(timer_1), True, (0, 0, 140)), ((surface_x_offset, surface_y_offset)))
     pygame.display.flip()
     clock.tick(settings['max_fps'])
+    if event.type == pygame.QUIT:
+        with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
+            json.dump(settings, text_file)
+        run = False
+pygame.quit()
+sys.exit()

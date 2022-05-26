@@ -1,13 +1,13 @@
 #  MATRICKS
 ̶MATRICKS in Python with Pygame
 
-![matrix](screenshot/0.png "Matrix")
-
+![matrix](screenshot/7.png "Matrix")
 This is a fork of the original (MATRIX-Digital-Rain). Plan to add more features.
 Going to make text look more like movie.
 Using these videos for comparison
 Video 1 - https://www.youtube.com/watch?v=MvEXkd3O2ow
 Video 2 - https://www.youtube.com/watch?v=m150jhSSj0g
+Video 3 - https://www.youtube.com/watch?v=pqqEriE0ogc
 
 Features added:
 * English Symbols
@@ -61,6 +61,8 @@ Possible future features:
 Known Issues:
 * Lines shouldn't scroll, digits should be added (See Video 2)
 * Hardcoded settings cause outdated settings.json. Delete file for defaults to reload is temp fix, until settings menu. 
+* Non 16:9 aspect ratio crashes game
+
 
 Gather information by correctly typing falling keys.
 Information unlocks passcodes used to dial-in.

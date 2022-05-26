@@ -52,7 +52,7 @@ surface_res = (res_width - (surface_x_offset * 2)), (res_height - (surface_y_off
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 if settings['scale_font']:
-    settings['font_size'] = int(surface_y_offset / 3.14)
+    settings['font_size'] = int(surface_y_offset / int(res_height / 200))
 
 top_symbols = [33, 35, 36, 37, 38, 40, 41, 42, 43, 45, 61, 64, 94, 95, 96, 126]
 middle_symbols = [34, 39, 44, 46, 47, 58, 59, 60, 62, 63, 91, 92, 93, 123, 124, 125]
@@ -82,7 +82,7 @@ class Symbol:
         self.x, self.y = x, y
         self.speed = speed
         self.value = choice(green)
-        self.interval = randrange(10, 200)  # rate symbols change
+        self.interval = randrange(150, 200)  # rate symbols change
 
     def draw(self, color):
         if color == 'green':

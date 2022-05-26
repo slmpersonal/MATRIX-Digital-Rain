@@ -40,6 +40,11 @@ Features added:
 
 ![matrix 7](screenshot/6.png "Times up")
 
+* Add Point Display
+* Accept Spacebar input
+
+![matrix 7](screenshot/7.png)
+
 Possible future features:
 * Randomize text size / alignment
 * Speed up text drop, add random stop at bottom
@@ -47,10 +52,11 @@ Possible future features:
 * Add Home screen
 * Add Settings Screen
 * Add Mini Games
-* Add Point System
-* Accept Typing input
+* Improve Point System
+* Improve Typing input
 * Use Capture Bar for Typing Game
 * Add Coding (Information gathering)
+* Borderless Window
 
 Known Issues:
 * Lines shouldn't scroll, digits should be added (See Video 2)

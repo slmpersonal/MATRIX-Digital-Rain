@@ -3,11 +3,12 @@ import sys
 import os
 import json
 from random import randrange, choice
+from pygame.locals import *
 
 settings = {  # Hardcoded default settings
     'debug_overlay': True,  # add debug overlay fps/cpu/log
-    'resolution.x': 800,
-    'resolution.y': 600,
+    'resolution.x': 1200,
+    'resolution.y': 800,
     'font_loc': 'font/ms mincho.ttf',
     'font_size': 40,
     'scale_font': True,
@@ -18,7 +19,7 @@ settings = {  # Hardcoded default settings
     'color_black': (0, 0, 0),  # Blue
     'alpha_value': 0,
     'max_fps': 60,
-    'game_clock': 15,
+    'game_clock': 120,
     'eng_u_multiplier': 0,
     'eng_l_multiplier': 1,
     'num_multiplier': 1,
@@ -37,7 +38,7 @@ except FileNotFoundError:  # than write new settings.json with defaults
 with open("settings.json", "r") as text_file:
     print(f'settings loaded:{json.load(text_file)}')  # for debugging
 
-run = True
+red_freq = 0
 game_clock = settings['game_clock']
 timer_1 = str(game_clock).rjust(3)
 resolution = res_width, res_height = (settings['resolution.x']), (settings['resolution.y'])
@@ -78,11 +79,11 @@ class Symbol:
         self.x, self.y = x, y
         self.speed = speed
         self.value = choice(green)
-        self.interval = randrange(5, 30)
+        self.interval = randrange(40, 45)
 
     def draw(self, color):
         if color == 'green':
-            coin = randrange(0, 20)  # Increasing this range reduces red frequency
+            coin = randrange(0, (game_clock - red_freq))  # Increasing this range reduces red frequency
             if coin == 0:
                 color = 'red'
             black_coin = randrange(0, 10)  # Increasing this range reduces black/flicker frequency
@@ -91,7 +92,8 @@ class Symbol:
 
         frames = pygame.time.get_ticks()
         if not frames % self.interval:
-            self.value = choice(green if color == 'green' else black if color == 'black' else red if color == 'red' else light_green)
+            self.value = choice(
+                green if color == 'green' else black if color == 'black' else red if color == 'red' else light_green)
         self.y = self.y + self.speed if self.y < res_height else -settings['font_size']
         surface.blit(self.value, (self.x, self.y))
 
@@ -117,9 +119,9 @@ background = pygame.image.load("assets/background.png").convert()  # Define back
 background = pygame.transform.scale(background, resolution)  # Scale background image
 textbox1 = pygame.image.load("assets/textbox.png").convert()
 textbox1 = pygame.transform.scale(textbox1,
-                                  ((res_width - (surface_x_offset * 2)), int(surface_y_offset / 4)))
+                                  ((res_width - (surface_x_offset * 2)), int(surface_y_offset / 2)))
 cli_cursor = pygame.image.load("assets/cli_cursor.png").convert()  # NEEDs work on scaling
-cli_cursor = pygame.transform.scale(cli_cursor, (((settings['font_size']) / 2), int((settings['font_size']) / 10)))
+cli_cursor = pygame.transform.scale(cli_cursor, (((settings['font_size']) / 2), int((settings['font_size']) / 1.3)))
 surface = pygame.Surface(surface_res)
 surface.set_alpha(settings['alpha_value'])
 
@@ -138,15 +140,12 @@ symbol_columns = [SymbolColumn(x, randrange(-res_height, 0)) for x in range(0, r
 #  In-Game messages
 message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
 
+blink = True
+run = True
 while run:
 
     screen.blit(background, (0, 0))
     screen.blit(textbox1, (surface_x_offset, (res_height - surface_y_offset)))
-
-    if pygame.time.get_ticks():
-        screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4), (res_height - surface_y_offset +
-                                                                                         int((settings['font_size']) *
-                                                                                             0.5))))
     screen.blit(surface, (surface_x_offset, surface_y_offset))
 
     surface.fill(pygame.Color('black'))
@@ -159,15 +158,30 @@ while run:
         pygame.display.update()
     if game_clock == 0:  # NEED to add 'and' for win/lost messages
         screen.blit(message_1, (((res_width / 2) - surface_y_offset), ((res_height / 2) - surface_y_offset)))
-    screen.blit(font.render(str(timer_1), True, (0, 0, 140)), ((surface_x_offset, surface_y_offset)))
+    screen.blit(font.render(str(timer_1), True, (0, 0, 140)), (surface_x_offset, surface_y_offset))
     for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key in [K_SPACE]:  # tap space to reduce corruption
+                red_freq -= 1
         if event.type == pygame.USEREVENT:
+            if red_freq < (game_clock - 2):  # game clock and red frequency balance each other
+                red_freq += 1
+            else:
+                red_freq -= 1  # reduce red frequency for coin toss range
             game_clock -= 1
             timer_1 = str(game_clock).rjust(3) if game_clock > 0 else 'GAME OVER!'
+            if game_clock % 2 == 0:
+                blink = True
+            else:
+                blink = False
         if event.type == pygame.QUIT:
             with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
                 json.dump(settings, text_file)
             run = False
+    if blink:
+        screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4), (res_height - surface_y_offset +
+                                                                                         int((settings['font_size']) *
+                                                                                             0.5))))
     pygame.display.flip()
     clock.tick(settings['max_fps'])
 pygame.quit()

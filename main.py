@@ -19,12 +19,11 @@ settings = {  # Hardcoded default settings
     'alpha_value': 0,
     'max_fps': 60,
     'game_clock': 15,
-    'matrix_multiplier': 1,
-    'eng_u_multiplier': 1,
+    'eng_u_multiplier': 0,
     'eng_l_multiplier': 1,
     'num_multiplier': 1,
     'sym_mid_multiplier': 1,
-    'sym_top_multiplier': 1
+    'sym_top_multiplier': 0
 }
 
 try:  # Load or create settings.json
@@ -128,7 +127,7 @@ surface.set_alpha(settings['alpha_value'])
 pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 #  Define choices
-black = [font.render(char, True, (settings['color_black'])) for char in chr_set_matrix]
+black = [font.render(' ', True, (settings['color_black']))]
 red = [font.render(char, True, (settings['color_red'])) for char in chr_set]
 green = [font.render(char, True, (settings['color_green'])) for char in chr_set_matrix]
 light_green = [font.render(char, True, (settings['color_light_green'])) for char in chr_set_matrix]
@@ -143,8 +142,11 @@ while run:
 
     screen.blit(background, (0, 0))
     screen.blit(textbox1, (surface_x_offset, (res_height - surface_y_offset)))
-    screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4),
-                             (res_height - surface_y_offset + int((settings['font_size']) * 0.5))))
+
+    if pygame.time.get_ticks():
+        screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4), (res_height - surface_y_offset +
+                                                                                         int((settings['font_size']) *
+                                                                                             0.5))))
     screen.blit(surface, (surface_x_offset, surface_y_offset))
 
     surface.fill(pygame.Color('black'))

@@ -51,12 +51,12 @@ os.environ['SDL_VIDEO_CENTERED'] = '1'
 if settings['scale_font']:
     settings['font_size'] = int(surface_y_offset / 3.14)
 
-top_symbols = [96, 126, 33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 95, 43, 61, 45]
-middle_symbols = (91, 93, 92, 59, 39, 44, 46, 47, 123, 125, 124, 58, 34, 60, 62, 63)
+top_symbols = [33, 35, 36, 37, 38, 40, 41, 42, 43, 45, 61, 64, 94, 95, 96, 126]
+middle_symbols = [34, 39, 44, 46, 47, 58, 59, 60, 62, 63, 91, 92, 93, 123, 124, 125]
 chr_set_pt_1 = [chr(int('0x30a0', 16) + i) for i in range(96)]  # Original Matrix chr_set
 chr_set_pt_2 = [chr(int(65) + i) for i in range(26)]  # English Upper chr_set
 chr_set_pt_3 = [chr(int(97) + i) for i in range(26)]  # English lower chr_set
-chr_set_pt_4 = [chr(int(48) + i) for i in range(57)]  # Numbers
+chr_set_pt_4 = [chr(int(48) + i) for i in range(10)]  # Numbers
 chr_set_pt_5 = [chr(middle_symbols[i]) for i in range(0, len(middle_symbols) - 1)]  # Middle keyboard symbols
 chr_set_pt_6 = [chr(top_symbols[i]) for i in range(0, len(top_symbols) - 1)]  # Top keyboard symbols
 chr_set = [chr(int(32))]  # NEED function/nav keycodes

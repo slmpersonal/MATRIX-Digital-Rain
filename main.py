@@ -78,9 +78,8 @@ add2sets(chr_set, chr_set_pt_6, (settings['sym_top_multiplier']))
 
 
 class Symbol:
-    def __init__(self, x, y, speed):
+    def __init__(self, x, y):
         self.x, self.y = x, y
-        self.speed = speed
         self.value = choice(green)
         self.interval = randrange(150, 200)  # rate symbols change
 
@@ -90,7 +89,7 @@ class Symbol:
             coin = randrange(0, (game_clock - red_freq))  # Increasing this range reduces red frequency
             if coin == 0:
                 color = 'red'
-            black_coin = randrange(0, 10)  # Increasing this range reduces black/flicker frequency
+            black_coin = randrange(0, 8)  # Increasing this range reduces black/flicker frequency
             if black_coin == 0:
                 color = 'black'
 
@@ -98,15 +97,13 @@ class Symbol:
         if not frames % self.interval:
             self.value = choice(
                 green if color == 'green' else black if color == 'black' else red if color == 'red' else light_green)
-        self.y = self.y + self.speed if self.y < res_height else -settings['font_size']
         surface.blit(self.value, (self.x, self.y))
 
 
 class SymbolColumn:
     def __init__(self, x, y):
-        self.column_height = randrange(int(res_height / 100), int(res_width / 100))
-        self.speed = randrange(3, 7)
-        self.symbols = [Symbol(x, i, self.speed) for i in range(y, y - (settings['font_size']) * self.column_height, -(
+        self.column_height = y
+        self.symbols = [Symbol(x, i) for i in range(y, y - (settings['font_size']) * self.column_height, -(
             settings['font_size']))]
 
     def draw(self):
@@ -139,8 +136,7 @@ green = [font.render(char, True, (settings['color_green'])) for char in chr_set_
 light_green = [font.render(char, True, (settings['color_light_green'])) for char in chr_set_matrix]
 
 #  Draw columns
-symbol_columns = [SymbolColumn(x, randrange(-res_height, 0)) for x in range(0, res_width,
-                                                                            settings['font_size'])]
+symbol_columns = [SymbolColumn(x, surface_res[1]) for x in range(0, res_width, settings['font_size'])]
 #  In-Game messages
 message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
 

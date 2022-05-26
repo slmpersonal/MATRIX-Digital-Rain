@@ -24,7 +24,8 @@ settings = {  # Hardcoded default settings
     'eng_l_multiplier': 1,
     'num_multiplier': 1,
     'sym_mid_multiplier': 1,
-    'sym_top_multiplier': 0
+    'sym_top_multiplier': 0,
+    'v_spread': 3,  # spread of virus
 }
 
 try:  # Load or create settings.json
@@ -38,7 +39,9 @@ except FileNotFoundError:  # than write new settings.json with defaults
 with open("settings.json", "r") as text_file:
     print(f'settings loaded:{json.load(text_file)}')  # for debugging
 
-red_freq = 0
+points = 0
+red_freq = 90
+point_cnt = str(points).ljust(3)
 game_clock = settings['game_clock']
 timer_1 = str(game_clock).rjust(3)
 resolution = res_width, res_height = (settings['resolution.x']), (settings['resolution.y'])
@@ -79,10 +82,11 @@ class Symbol:
         self.x, self.y = x, y
         self.speed = speed
         self.value = choice(green)
-        self.interval = randrange(40, 45)
+        self.interval = randrange(10, 200)  # rate symbols change
 
     def draw(self, color):
         if color == 'green':
+
             coin = randrange(0, (game_clock - red_freq))  # Increasing this range reduces red frequency
             if coin == 0:
                 color = 'red'
@@ -140,7 +144,6 @@ symbol_columns = [SymbolColumn(x, randrange(-res_height, 0)) for x in range(0, r
 #  In-Game messages
 message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
 
-blink = True
 run = True
 while run:
 
@@ -159,26 +162,26 @@ while run:
     if game_clock == 0:  # NEED to add 'and' for win/lost messages
         screen.blit(message_1, (((res_width / 2) - surface_y_offset), ((res_height / 2) - surface_y_offset)))
     screen.blit(font.render(str(timer_1), True, (0, 0, 140)), (surface_x_offset, surface_y_offset))
+    screen.blit(font.render(str(point_cnt), True, (0, 0, 140)), ((res_width - (surface_x_offset * 2)), surface_y_offset))
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
-            if event.key in [K_SPACE]:  # tap space to reduce corruption
+            if event.key in [K_SPACE, K_a]:  # tap space to reduce corruption
                 red_freq -= 1
+                points += 1
+                point_cnt = points
         if event.type == pygame.USEREVENT:
-            if red_freq < (game_clock - 2):  # game clock and red frequency balance each other
-                red_freq += 1
+            if red_freq < (game_clock - (settings['v_spread']) - 1):  # game clock and red frequency balance each other
+                red_freq += (settings['v_spread'])
             else:
-                red_freq -= 1  # reduce red frequency for coin toss range
+                red_freq -= (settings['v_spread'])  # reduce red frequency for coin toss range
             game_clock -= 1
             timer_1 = str(game_clock).rjust(3) if game_clock > 0 else 'GAME OVER!'
-            if game_clock % 2 == 0:
-                blink = True
-            else:
-                blink = False
         if event.type == pygame.QUIT:
             with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
                 json.dump(settings, text_file)
             run = False
-    if blink:
+
+    if game_clock % 2 == 0:
         screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4), (res_height - surface_y_offset +
                                                                                          int((settings['font_size']) *
                                                                                              0.5))))

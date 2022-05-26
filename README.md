@@ -45,8 +45,15 @@ Features added:
 
 ![matrix 7](screenshot/7.png)
 
+* Removed scrolling
+
+![matrix 8](screenshot/8.png)
+
 Possible future features:
+
 * Randomize text size / alignment
+* Define Grid
+* Column Matrix Rain (Sequential Symbol Change)
 * Speed up text drop, add random stop at bottom
 * Add GUI (QT Designer)
 * Add Home screen

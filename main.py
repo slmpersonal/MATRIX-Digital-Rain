@@ -8,7 +8,7 @@ settings = {  # Hardcoded default settings
     'debug_overlay': True,  # add debug overlay fps/cpu/log
     'resolution.x': 800,
     'resolution.y': 600,
-    'font': 'font/ms mincho.ttf',
+    'font_loc': 'font/ms mincho.ttf',
     'font_size': 40,
     'scale_font': True,
     'color_green': (20, 240, 20),  # Green
@@ -43,13 +43,13 @@ game_clock = settings['game_clock']
 timer_1 = str(game_clock).rjust(3)
 resolution = res_width, res_height = (settings['resolution.x']), (settings['resolution.y'])
 surface_x_offset = int(res_width / 16)
-surface_y_offset = int(res_height / 10) * 2
+surface_y_offset = int(res_height / 5)
 surface_res = (res_width - (surface_x_offset * 2)), (res_height - (surface_y_offset * 2))
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 if settings['scale_font']:
-    font = (surface_y_offset / 25)
+    settings['font_size'] = int(surface_y_offset / 3.14)
 
 top_symbols = [96, 126, 33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 95, 43, 61, 45]
 middle_symbols = (91, 93, 92, 59, 39, 44, 46, 47, 123, 125, 124, 58, 34, 60, 62, 63)
@@ -93,8 +93,7 @@ class Symbol:
 
         frames = pygame.time.get_ticks()
         if not frames % self.interval:
-            self.value = choice(green if color == 'green' else black if color == 'black'
-            else red if color == 'red' else light_green)
+            self.value = choice(green if color == 'green' else black if color == 'black' else red if color == 'red' else light_green)
         self.y = self.y + self.speed if self.y < res_height else -settings['font_size']
         surface.blit(self.value, (self.x, self.y))
 
@@ -111,7 +110,7 @@ class SymbolColumn:
 
 
 pygame.init()  # Init pygame
-font = pygame.font.Font(settings['font'], settings['font_size'])  # Set font
+font = pygame.font.Font(settings['font_loc'], settings['font_size'])  # Set font
 screen = pygame.display.set_mode(resolution)  # Display updater
 clock = pygame.time.Clock()  # Create clock
 
@@ -137,7 +136,7 @@ light_green = [font.render(char, True, (settings['color_light_green'])) for char
 
 #  Draw columns
 symbol_columns = [SymbolColumn(x, randrange(-res_height, 0)) for x in range(0, res_width,
-                                                                                          settings['font_size'])]
+                                                                            settings['font_size'])]
 #  In-Game messages
 message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
 
@@ -157,23 +156,18 @@ while run:
         settings['alpha_value'] += 6
         surface.set_alpha(settings['alpha_value'])
         pygame.display.update()
-
+    if game_clock == 0:  # NEED to add 'and' for win/lost messages
+        screen.blit(message_1, (((res_width / 2) - surface_y_offset), ((res_height / 2) - surface_y_offset)))
+    screen.blit(font.render(str(timer_1), True, (0, 0, 140)), ((surface_x_offset, surface_y_offset)))
     for event in pygame.event.get():
         if event.type == pygame.USEREVENT:
             game_clock -= 1
             timer_1 = str(game_clock).rjust(3) if game_clock > 0 else 'GAME OVER!'
-    if event.type == pygame.QUIT:
-        with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
-            json.dump(settings, text_file)
-        run = False
-    if game_clock == 0:  # NEED to add 'and' for win/lost messages
-        screen.blit(message_1, (((res_width / 2) - surface_y_offset), ((res_height / 2) - surface_y_offset)))
-    screen.blit(font.render(str(timer_1), True, (0, 0, 140)), ((surface_x_offset, surface_y_offset)))
+        if event.type == pygame.QUIT:
+            with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
+                json.dump(settings, text_file)
+            run = False
     pygame.display.flip()
     clock.tick(settings['max_fps'])
-    if event.type == pygame.QUIT:
-        with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
-            json.dump(settings, text_file)
-        run = False
 pygame.quit()
 sys.exit()

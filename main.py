@@ -41,13 +41,13 @@ with open("settings.json", "r") as text_file:
 
 points = 0
 red_freq = 90
-point_cnt = str(points).ljust(3)
+point_cnt = str(points).rjust(3)
 game_clock = settings['game_clock']
-timer_1 = str(game_clock).rjust(3)
+timer_1 = str(game_clock).ljust(3)
 resolution = res_width, res_height = (settings['resolution.x']), (settings['resolution.y'])
 surface_x_offset = int(res_width / 16)
 surface_y_offset = int(res_height / 5)
-surface_res = (res_width - (surface_x_offset * 2)), (res_height - (surface_y_offset * 2))
+surface_res = (res_width - (surface_x_offset * 2)), (res_height - (settings['font_size']) - (surface_y_offset * 2))
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -96,18 +96,18 @@ class Symbol:
         frames = pygame.time.get_ticks()
         if not frames % self.interval:
             self.value = choice(
-                green if color == 'green' else black if color == 'black' else red if color == 'red' else light_green)
+                green if color == 'green' else black if color == 'black' else red)
         surface.blit(self.value, (self.x, self.y))
 
 
 class SymbolColumn:
     def __init__(self, x, y):
         self.column_height = y
-        self.symbols = [Symbol(x, i) for i in range(y, y - (settings['font_size']) * self.column_height, -(
+        self.symbols = [Symbol(x, i) for i in range(0, y, (
             settings['font_size']))]
 
     def draw(self):
-        [symbol.draw('green') if i else symbol.draw('light green') for i, symbol in enumerate(self.symbols)]
+        [symbol.draw('green') for i, symbol in enumerate(self.symbols)]
 
 
 pygame.init()  # Init pygame
@@ -133,10 +133,9 @@ pygame.time.set_timer(pygame.USEREVENT, 1000)
 black = [font.render(' ', True, (settings['color_black']))]
 red = [font.render(char, True, (settings['color_red'])) for char in chr_set]
 green = [font.render(char, True, (settings['color_green'])) for char in chr_set_matrix]
-light_green = [font.render(char, True, (settings['color_light_green'])) for char in chr_set_matrix]
 
 #  Draw columns
-symbol_columns = [SymbolColumn(x, surface_res[1]) for x in range(0, res_width, settings['font_size'])]
+symbol_columns = [SymbolColumn(x, surface_res[1]) for x in range(0, (surface_res[0] - (settings['font_size'])), settings['font_size'])]
 #  In-Game messages
 message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
 
@@ -145,7 +144,7 @@ while run:
 
     screen.blit(background, (0, 0))
     screen.blit(textbox1, (surface_x_offset, (res_height - surface_y_offset)))
-    screen.blit(surface, (surface_x_offset, surface_y_offset))
+    screen.blit(surface, (surface_x_offset, (surface_y_offset + settings['font_size'])))
 
     surface.fill(pygame.Color('black'))
 
@@ -171,7 +170,7 @@ while run:
             else:
                 red_freq -= (settings['v_spread'])  # reduce red frequency for coin toss range
             game_clock -= 1
-            timer_1 = str(game_clock).rjust(3) if game_clock > 0 else 'GAME OVER!'
+            timer_1 = game_clock
         if event.type == pygame.QUIT:
             with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
                 json.dump(settings, text_file)

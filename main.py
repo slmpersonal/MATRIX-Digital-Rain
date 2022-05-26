@@ -53,7 +53,7 @@ if settings['scale_font']:
 
 top_symbols = [33, 35, 36, 37, 38, 40, 41, 42, 43, 45, 61, 64, 94, 95, 96, 126]
 middle_symbols = [34, 39, 44, 46, 47, 58, 59, 60, 62, 63, 91, 92, 93, 123, 124, 125]
-chr_set_pt_1 = [chr(int('0x30a0', 16) + i) for i in range(96)]  # Original Matrix chr_set
+chr_set_matrix = [chr(int('0x30a0', 16) + i) for i in range(96)]  # Original Matrix chr_set
 chr_set_pt_2 = [chr(int(65) + i) for i in range(26)]  # English Upper chr_set
 chr_set_pt_3 = [chr(int(97) + i) for i in range(26)]  # English lower chr_set
 chr_set_pt_4 = [chr(int(48) + i) for i in range(10)]  # Numbers
@@ -67,7 +67,6 @@ def add2sets(set_1, set_2, set_multi):  # Function to combined chr_set(s) list
         set_1 += set_2
 
 
-add2sets(chr_set, chr_set_pt_1, (settings['matrix_multiplier']))
 add2sets(chr_set, chr_set_pt_2, (settings['eng_u_multiplier']))
 add2sets(chr_set, chr_set_pt_3, (settings['eng_l_multiplier']))
 add2sets(chr_set, chr_set_pt_4, (settings['num_multiplier']))
@@ -129,10 +128,10 @@ surface.set_alpha(settings['alpha_value'])
 pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 #  Define choices
-black = [font.render(char, True, (settings['color_black'])) for char in chr_set]
+black = [font.render(char, True, (settings['color_black'])) for char in chr_set_matrix]
 red = [font.render(char, True, (settings['color_red'])) for char in chr_set]
-green = [font.render(char, True, (settings['color_green'])) for char in chr_set]
-light_green = [font.render(char, True, (settings['color_light_green'])) for char in chr_set]
+green = [font.render(char, True, (settings['color_green'])) for char in chr_set_matrix]
+light_green = [font.render(char, True, (settings['color_light_green'])) for char in chr_set_matrix]
 
 #  Draw columns
 symbol_columns = [SymbolColumn(x, randrange(-res_height, 0)) for x in range(0, res_width,

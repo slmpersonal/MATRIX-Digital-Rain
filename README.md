@@ -43,6 +43,7 @@ Features added:
 * Add Point Display
 * Accept Spacebar input
 * Removed scrolling
+* Limited corrupted character set
 
 ![matrix 8](screenshot/8.png)
 

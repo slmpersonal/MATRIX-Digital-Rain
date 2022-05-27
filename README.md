@@ -58,7 +58,6 @@ Features added:
 Possible future features:
 
 * Animated Buttons / Lights
-* Randomize text size / alignment
 * Define Grid
 * Column Matrix Rain (Sequential Symbol Change)
 * Speed up text drop, add random stop at bottom

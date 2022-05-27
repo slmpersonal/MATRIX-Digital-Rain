@@ -141,16 +141,30 @@ green = [font.render(char, True, (settings['color_green'])) for char in chr_set_
 symbol_columns = [SymbolColumn(x, surface_res[1]) for x in
                   range(0, (surface_res[0] - (settings['font_size'])), settings['font_size'])]
 #  In-Game messages
-message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
-m1r = message_1.get_rect()
+message_times_up = font.render('[CORRUPTION]', False, (250, 40, 40))
+m_t_u_r = message_times_up.get_rect()
+message_game_over = font.render('[CLEARED]', False, (40, 40, 250))
+m_g_o_r = message_game_over.get_rect()
 
 
-def game_over(score, time):
-    message_2 = font.render(str(score), False, (250, 40, 40))
-    message_3 = font.render(str(time), False, (250, 40, 40))
+def times_up(score, time):
+    message_2 = font.render(('score: ' + str(score)), False, (250, 40, 40))
+    message_3 = font.render(('time: ' + str(time)), False, (250, 40, 40))
     m2r = message_2.get_rect()
     m3r = message_3.get_rect()
-    screen.blit(message_1, (((res_width / 2) - m1r.center[0]), ((res_height / 2) - m1r.center[1])))
+    screen.blit(message_times_up, (((res_width / 2) - m_t_u_r.center[0]), ((res_height / 2) - m_t_u_r.center[1])))
+    screen.blit(message_2, (
+        ((res_width / 2) - m2r.center[0]), ((res_height / 2) - (m2r.center[1] - (settings['font_size'])))))
+    screen.blit(message_3, (
+        ((res_width / 2) - m3r.center[0]), ((res_height / 2) - (m3r.center[1] - (2 * (settings['font_size']))))))
+
+
+def cleared(score, time):
+    message_2 = font.render(('score: ' + str(score)), False, (40, 40, 250))
+    message_3 = font.render(('time: ' + str(time)), False, (40, 40, 250))
+    m2r = message_2.get_rect()
+    m3r = message_3.get_rect()
+    screen.blit(message_game_over, (((res_width / 2) - m_g_o_r.center[0]), ((res_height / 2) - m_g_o_r.center[1])))
     screen.blit(message_2, (
         ((res_width / 2) - m2r.center[0]), ((res_height / 2) - (m2r.center[1] - (settings['font_size'])))))
     screen.blit(message_3, (
@@ -177,10 +191,10 @@ while run:
             surface.set_alpha(settings['alpha_value'])
             pygame.display.update()
         if game_clock == 0:
-            game_over(points, game_clock)
+            times_up(points, game_clock)
             anime = False
         elif points == (settings['score2win']):  # NEED to add 'and' for win/lost messages
-            game_over(points, game_clock)
+            cleared(points, game_clock)
             anime = False
 
             # run = False

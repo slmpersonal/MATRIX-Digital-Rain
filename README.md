@@ -49,9 +49,13 @@ Features added:
 
 ![matrix 8](screenshot/8.png)
 
-GUI Scaling work
+* GUI Scaling work
 
 ![matrix 9](screenshot/9.png)
+
+* Created Win Condition (25 points before time runs out, tap spacebar for points)
+
+![matrix 10](screenshot/10.png)
 
 Possible future features:
 

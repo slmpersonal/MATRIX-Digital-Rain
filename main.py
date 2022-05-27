@@ -19,13 +19,15 @@ settings = {  # Hardcoded default settings
     'color_black': (0, 0, 0),  # Blue
     'alpha_value': 0,
     'max_fps': 60,
-    'game_clock': 120,
+    'game_clock': 40,
     'eng_u_multiplier': 0,
     'eng_l_multiplier': 1,
     'num_multiplier': 1,
     'sym_mid_multiplier': 1,
     'sym_top_multiplier': 0,
     'v_spread': 3,  # spread of virus
+    'score2win': 25,
+    'time2beat': 1
 }
 
 try:  # Load or create settings.json
@@ -40,9 +42,10 @@ with open("settings.json", "r") as text_file:
     print(f'settings loaded:{json.load(text_file)}')  # for debugging
 
 points = 0
-red_freq = 90
+
 point_cnt = str(points).rjust(3)
 game_clock = settings['game_clock']
+red_freq = int(game_clock / 2)
 timer_1 = str(game_clock).ljust(3)
 resolution = res_width, res_height = (settings['resolution.x']), (settings['resolution.y'])
 surface_x_offset = int(res_width / 16)
@@ -135,52 +138,82 @@ red = [font.render(char, True, (settings['color_red'])) for char in chr_set]
 green = [font.render(char, True, (settings['color_green'])) for char in chr_set_matrix]
 
 #  Draw columns
-symbol_columns = [SymbolColumn(x, surface_res[1]) for x in range(0, (surface_res[0] - (settings['font_size'])), settings['font_size'])]
+symbol_columns = [SymbolColumn(x, surface_res[1]) for x in
+                  range(0, (surface_res[0] - (settings['font_size'])), settings['font_size'])]
 #  In-Game messages
 message_1 = font.render('[CORRUPTION]', False, (250, 40, 40))
+m1r = message_1.get_rect()
+
+
+def game_over(score, time):
+    message_2 = font.render(str(score), False, (250, 40, 40))
+    message_3 = font.render(str(time), False, (250, 40, 40))
+    m2r = message_2.get_rect()
+    m3r = message_3.get_rect()
+    screen.blit(message_1, (((res_width / 2) - m1r.center[0]), ((res_height / 2) - m1r.center[1])))
+    screen.blit(message_2, (
+        ((res_width / 2) - m2r.center[0]), ((res_height / 2) - (m2r.center[1] - (settings['font_size'])))))
+    screen.blit(message_3, (
+        ((res_width / 2) - m3r.center[0]), ((res_height / 2) - (m3r.center[1] - (2 * (settings['font_size']))))))
+
 
 run = True
+anime = True
 while run:
-
-    screen.blit(background, (0, 0))
-    screen.blit(textbox1, (surface_x_offset, (res_height - surface_y_offset)))
-    screen.blit(surface, (surface_x_offset, (surface_y_offset + settings['font_size'])))
-
-    surface.fill(pygame.Color('black'))
-
-    [symbol_column.draw() for symbol_column in symbol_columns]
-
-    if not pygame.time.get_ticks() % 20 and settings['alpha_value'] < 170:
-        settings['alpha_value'] += 6
-        surface.set_alpha(settings['alpha_value'])
-        pygame.display.update()
-    if game_clock == 0:  # NEED to add 'and' for win/lost messages
-        screen.blit(message_1, (((res_width / 2) - surface_y_offset), ((res_height / 2) - surface_y_offset)))
-    screen.blit(font.render(str(timer_1), True, (0, 0, 140)), (surface_x_offset, surface_y_offset))
-    screen.blit(font.render(str(point_cnt), True, (0, 0, 140)), ((res_width - (surface_x_offset * 2)), surface_y_offset))
     for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key in [K_SPACE, K_a]:  # tap space to reduce corruption
-                red_freq -= 1
-                points += 1
-                point_cnt = points
-        if event.type == pygame.USEREVENT:
-            if red_freq < (game_clock - (settings['v_spread']) - 1):  # game clock and red frequency balance each other
-                red_freq += (settings['v_spread'])
-            else:
-                red_freq -= (settings['v_spread'])  # reduce red frequency for coin toss range
-            game_clock -= 1
-            timer_1 = game_clock
         if event.type == pygame.QUIT:
-            with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
-                json.dump(settings, text_file)
             run = False
+    while anime:
+        screen.blit(background, (0, 0))
+        screen.blit(textbox1, (surface_x_offset, (res_height - surface_y_offset)))
+        screen.blit(surface, (surface_x_offset, (surface_y_offset + settings['font_size'])))
 
-    if game_clock % 2 == 0:
-        screen.blit(cli_cursor, (surface_x_offset + int((settings['font_size']) * 0.4), (res_height - surface_y_offset +
-                                                                                         int((settings['font_size']) *
-                                                                                             0.5))))
-    pygame.display.flip()
-    clock.tick(settings['max_fps'])
+        surface.fill(pygame.Color('black'))
+
+        [symbol_column.draw() for symbol_column in symbol_columns]
+
+        if not pygame.time.get_ticks() % 20 and settings['alpha_value'] < 170:
+            settings['alpha_value'] += 6
+            surface.set_alpha(settings['alpha_value'])
+            pygame.display.update()
+        if game_clock == 0:
+            game_over(points, game_clock)
+            anime = False
+        elif points == (settings['score2win']):  # NEED to add 'and' for win/lost messages
+            game_over(points, game_clock)
+            anime = False
+
+            # run = False
+        screen.blit(font.render(str(timer_1), True, (0, 0, 140)), (surface_x_offset, surface_y_offset))
+        screen.blit(font.render(str(point_cnt), True, (0, 0, 140)),
+                    ((res_width - (surface_x_offset * 2)), surface_y_offset))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                anime = False
+            if event.type == pygame.KEYDOWN:
+                if event.key in [K_SPACE, K_a]:  # tap space to reduce corruption
+                    red_freq -= 1
+                    points += 1
+                    point_cnt = str(points).rjust(3)
+            if event.type == pygame.USEREVENT:
+                if red_freq < (
+                        game_clock - (settings['v_spread']) - 1):  # game clock and red frequency balance each other
+                    red_freq += (settings['v_spread'])
+                else:
+                    red_freq -= (settings['v_spread'])  # reduce red frequency for coin toss range
+                game_clock -= 1
+                timer_1 = game_clock
+
+        if game_clock % 2 == 0:
+            screen.blit(cli_cursor,
+                        (surface_x_offset + int((settings['font_size']) * 0.4), (res_height - surface_y_offset +
+                                                                                 int((settings['font_size']) *
+                                                                                     0.5))))
+        pygame.display.flip()
+        clock.tick(settings['max_fps'])
+
+with open('settings.json', 'w') as text_file:  # NEED try/except for disk-permission-write error
+    json.dump(settings, text_file)
 pygame.quit()
 sys.exit()

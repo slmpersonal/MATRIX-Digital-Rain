@@ -55,6 +55,11 @@ Features added:
 
 ![matrix 10](screenshot/10.png)
 
+* Symbol's draw code optimized
+* Visual improvement
+
+![matrix 11](screenshot/11.png)
+
 Possible future features:
 
 * Improve Typing input

@@ -13,10 +13,10 @@ settings = {  # Hardcoded default settings
     'font_size': 40,
     'scale_font': True,
     'color_green': (20, 240, 20),  # Green
-    'color_light_green': (180, 250, 180),  # Light green
     'color_red': (245, 20, 20),  # Red
-    'color_blue': (40, 40, 140),  # Blue
-    'color_black': (0, 0, 0),  # Blue
+    'color_blue': (20, 20, 240),  # Blue
+    'color_black': (0, 0, 0),  # Black
+    'color_white': (0, 0, 0),  # White
     'alpha_value': 0,
     'max_fps': 60,
     'game_clock': 40,
@@ -25,8 +25,8 @@ settings = {  # Hardcoded default settings
     'num_multiplier': 1,
     'sym_mid_multiplier': 1,
     'sym_top_multiplier': 0,
-    'v_spread': 3,  # spread of virus
-    'score2win': 25,
+    'v_spread': 2,  # spread of virus
+    'score2win': 45,
     'time2beat': 1
 }
 
@@ -83,18 +83,17 @@ add2sets(chr_set, chr_set_pt_6, (settings['sym_top_multiplier']))
 class Symbol:
     def __init__(self, x, y):
         self.x, self.y = x, y
-        self.value = choice(green)
-        self.interval = randrange(150, 200)  # rate symbols change
+        self.value = choice(black)
+        self.interval = randrange(90, 200)  # rate symbols change
 
     def draw(self, color):
-        if color == 'green':
+        if color == 'black':
 
-            coin = randrange(0, (game_clock - red_freq))  # Increasing this range reduces red frequency
-            if coin == 0:
+            red_coin = randrange(0, (game_clock - red_freq))  # Increasing this range reduces red frequency
+            if red_coin == 0:
                 color = 'red'
-            black_coin = randrange(0, 8)  # Increasing this range reduces black/flicker frequency
-            if black_coin == 0:
-                color = 'black'
+            elif red_coin % 3 == 0:
+                color = 'green'
 
         frames = pygame.time.get_ticks()
         if not frames % self.interval:
@@ -110,7 +109,7 @@ class SymbolColumn:
             settings['font_size']))]
 
     def draw(self):
-        [symbol.draw('green') for i, symbol in enumerate(self.symbols)]
+        [symbol.draw('black') for i, symbol in enumerate(self.symbols)]
 
 
 pygame.init()  # Init pygame

@@ -1,7 +1,7 @@
 #  MATRICKS
 ̶MATRICKS in Python with Pygame
 
-![matrix](screenshot/7.png "Matrix")
+![matrix 1](screenshot/9.png "Matrix")
 This is a fork of the original (MATRIX-Digital-Rain). Plan to add more features.
 Going to make text look more like movie.
 Using these videos for comparison
@@ -12,18 +12,18 @@ Video 3 - https://www.youtube.com/watch?v=pqqEriE0ogc
 Features added:
 * English Symbols
 
-![matrix2](screenshot/1.png "English Symbols")
+![matrix 2](screenshot/1.png "English Symbols")
 
 * Monitor Boarder
 * Settings file
 
-![matrix3](screenshot/2.png "Monitor")
+![matrix 3](screenshot/2.png "Monitor")
 
 * Red Corruption added to symbols
 * Length of columns now scales with resolution (Solves collisions)
 * Space made at bottom of screen for capture bar
 
-![matrix4](screenshot/3.png "Corruption")
+![matrix 4](screenshot/3.png "Corruption")
 
 * Added more symbols
 * Added numbers
@@ -49,8 +49,13 @@ Features added:
 
 ![matrix 8](screenshot/8.png)
 
+GUI Scaling work
+
+![matrix 9](screenshot/9.png)
+
 Possible future features:
 
+* Animated Buttons / Lights
 * Randomize text size / alignment
 * Define Grid
 * Column Matrix Rain (Sequential Symbol Change)

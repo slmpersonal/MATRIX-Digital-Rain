@@ -42,7 +42,6 @@ with open("settings.json", "r") as text_file:
     print(f'settings loaded:{json.load(text_file)}')  # for debugging
 
 points = 0
-
 point_cnt = str(points).rjust(3)
 game_clock = settings['game_clock']
 red_freq = int(game_clock / 2)
@@ -52,10 +51,13 @@ surface_x_offset = int(res_width / 16)
 surface_y_offset = int(res_height / 5)
 surface_res = (res_width - (surface_x_offset * 2)), (res_height - (settings['font_size']) - (surface_y_offset * 2))
 
-os.environ['SDL_VIDEO_CENTERED'] = '1'
-
+#  Set font size
 if settings['scale_font']:
-    settings['font_size'] = int(surface_y_offset / int(res_height / 200))
+    font_size = int(surface_y_offset / int(res_height / 200))
+else:
+    font_size = settings['font_size']
+
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 top_symbols = [33, 35, 36, 37, 38, 40, 41, 42, 43, 45, 61, 64, 94, 95, 96, 126]
 middle_symbols = [34, 39, 44, 46, 47, 58, 59, 60, 62, 63, 91, 92, 93, 123, 124, 125]
@@ -106,14 +108,14 @@ class SymbolColumn:
     def __init__(self, x, y):
         self.column_height = y
         self.symbols = [Symbol(x, i) for i in range(0, y, (
-            settings['font_size']))]
+            font_size))]
 
     def draw(self):
         [symbol.draw('black') for i, symbol in enumerate(self.symbols)]
 
 
 pygame.init()  # Init pygame
-font = pygame.font.Font(settings['font_loc'], settings['font_size'])  # Set font
+font = pygame.font.Font(settings['font_loc'], font_size)  # Set font
 screen = pygame.display.set_mode(resolution)  # Display updater
 clock = pygame.time.Clock()  # Create clock
 
@@ -124,7 +126,7 @@ textbox1 = pygame.image.load("assets/textbox.png").convert()
 textbox1 = pygame.transform.scale(textbox1,
                                   ((res_width - (surface_x_offset * 2)), int(surface_y_offset / 2)))
 cli_cursor = pygame.image.load("assets/cli_cursor.png").convert()  # NEEDs work on scaling
-cli_cursor = pygame.transform.scale(cli_cursor, (((settings['font_size']) / 2), int((settings['font_size']) / 1.3)))
+cli_cursor = pygame.transform.scale(cli_cursor, ((font_size / 2), int(font_size / 1.3)))
 surface = pygame.Surface(surface_res)
 surface.set_alpha(settings['alpha_value'])
 
@@ -138,7 +140,7 @@ green = [font.render(char, True, (settings['color_green'])) for char in chr_set_
 
 #  Draw columns
 symbol_columns = [SymbolColumn(x, surface_res[1]) for x in
-                  range(0, (surface_res[0] - (settings['font_size'])), settings['font_size'])]
+                  range(0, (surface_res[0] - font_size), font_size)]
 #  In-Game messages
 message_times_up = font.render('[CORRUPTION]', False, (250, 40, 40))
 m_t_u_r = message_times_up.get_rect()
@@ -153,9 +155,9 @@ def times_up(score, time):
     m3r = message_3.get_rect()
     screen.blit(message_times_up, (((res_width / 2) - m_t_u_r.center[0]), ((res_height / 2) - m_t_u_r.center[1])))
     screen.blit(message_2, (
-        ((res_width / 2) - m2r.center[0]), ((res_height / 2) - (m2r.center[1] - (settings['font_size'])))))
+        ((res_width / 2) - m2r.center[0]), ((res_height / 2) - (m2r.center[1] - font_size))))
     screen.blit(message_3, (
-        ((res_width / 2) - m3r.center[0]), ((res_height / 2) - (m3r.center[1] - (2 * (settings['font_size']))))))
+        ((res_width / 2) - m3r.center[0]), ((res_height / 2) - (m3r.center[1] - (2 * font_size)))))
 
 
 def cleared(score, time):
@@ -165,9 +167,9 @@ def cleared(score, time):
     m3r = message_3.get_rect()
     screen.blit(message_game_over, (((res_width / 2) - m_g_o_r.center[0]), ((res_height / 2) - m_g_o_r.center[1])))
     screen.blit(message_2, (
-        ((res_width / 2) - m2r.center[0]), ((res_height / 2) - (m2r.center[1] - (settings['font_size'])))))
+        ((res_width / 2) - m2r.center[0]), ((res_height / 2) - (m2r.center[1] - font_size))))
     screen.blit(message_3, (
-        ((res_width / 2) - m3r.center[0]), ((res_height / 2) - (m3r.center[1] - (2 * (settings['font_size']))))))
+        ((res_width / 2) - m3r.center[0]), ((res_height / 2) - (m3r.center[1] - (2 * font_size)))))
 
 
 run = True
@@ -179,7 +181,7 @@ while run:
     while anime:
         screen.blit(background, (0, 0))
         screen.blit(textbox1, (surface_x_offset, (res_height - surface_y_offset)))
-        screen.blit(surface, (surface_x_offset, (surface_y_offset + settings['font_size'])))
+        screen.blit(surface, (surface_x_offset, (surface_y_offset + font_size)))
 
         surface.fill(pygame.Color('black'))
 
@@ -220,9 +222,8 @@ while run:
 
         if game_clock % 2 == 0:
             screen.blit(cli_cursor,
-                        (surface_x_offset + int((settings['font_size']) * 0.4), (res_height - surface_y_offset +
-                                                                                 int((settings['font_size']) *
-                                                                                     0.5))))
+                        (surface_x_offset + int(font_size * 0.4), (res_height - surface_y_offset + int(
+                            font_size * 0.5))))
         pygame.display.flip()
         clock.tick(settings['max_fps'])
 

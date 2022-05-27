@@ -42,9 +42,6 @@ Features added:
 
 * Add Point Display
 * Accept Spacebar input
-
-![matrix 7](screenshot/7.png)
-
 * Removed scrolling
 
 ![matrix 8](screenshot/8.png)

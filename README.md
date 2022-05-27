@@ -57,16 +57,15 @@ Features added:
 
 Possible future features:
 
+* Improve Typing input
 * Animated Buttons / Lights
 * Define Grid
 * Column Matrix Rain (Sequential Symbol Change)
-* Speed up text drop, add random stop at bottom
-* Add GUI (QT Designer)
+* Add GUI
 * Add Home screen
 * Add Settings Screen
 * Add Mini Games
 * Improve Point System
-* Improve Typing input
 * Use Capture Bar for Typing Game
 * Add Coding (Information gathering)
 * Borderless Window
